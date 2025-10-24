@@ -8,7 +8,6 @@ if (!baseURL) {
 
 const api = axios.create({
   baseURL,
-  // Puedes agregar headers comunes aquí si lo necesitas
 });
 
 export default api;
