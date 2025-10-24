@@ -3,7 +3,7 @@ import Layout from "./views/Layout";
 import MercadoPagoView from "./views/app/mercadopago/MercadoPagoView";
 import HomeView from "./views/app/home/HomeView";
 import PortalView from "./views/auth/PortalView";
-import ProtectedRoute from "./views/auth/_components/ProtectedRoute";
+import ProtectedRoute from "./views/_components/ProtectedRoute";
 
 export default function Router() {
   return (
