@@ -1,18 +1,16 @@
+import { useNavigate, useLocation } from "react-router-dom";
+
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const menuItems = [
     {
+      label: "Inicio",
+      path: "/",
+    },
+    {
       label: "Mercado Pago",
-      icon: (
-        <span className="flex items-center justify-center h-10 w-10 bg-white rounded-full">
-          <img
-            src="/mercadopago.png"
-            alt="Mercado Pago logo"
-            className="h-8 w-auto object-contain"
-            draggable={false}
-          />
-        </span>
-      ),
-      onClick: () => {},
+      path: "/mercado-pago",
     },
   ];
 
@@ -26,17 +24,23 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 flex flex-col gap-2 px-2 py-4">
-        {menuItems.map((item) => (
-          <button
-            key={item.label}
-            className="flex items-center gap-3 px-4 py-2 rounded-lg font-medium text-gray-100 bg-[#23262F] hover:bg-blue-900/60 transition border border-transparent hover:border-blue-500 shadow-sm cursor-pointer"
-            onClick={item.onClick}
-          >
-            {item.icon}
-            <span className="text-base">{item.label}</span>
-          </button>
-        ))}
+      <nav className="flex-1 flex flex-col gap-1 px-2 py-3">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <button
+              key={item.label}
+              className={`flex items-center px-3 py-1.5 rounded-md font-medium transition border border-transparent shadow-sm cursor-pointer text-sm ${
+                isActive
+                  ? "bg-blue-900/80 text-blue-300 border-blue-500"
+                  : "text-gray-100 bg-[#23262F] hover:bg-blue-900/60 hover:border-blue-500"
+              }`}
+              onClick={() => navigate(item.path)}
+            >
+              {item.label}
+            </button>
+          );
+        })}
       </nav>
 
       {/* Footer */}
