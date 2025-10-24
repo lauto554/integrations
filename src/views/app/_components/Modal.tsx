@@ -16,7 +16,7 @@ const Modal: React.FC<ModalProps> = ({ open, onClose, children }) => {
         onClick={onClose}
       />
       {/* Modal content */}
-      <div className="relative z-10 bg-[#23262F] rounded-xl shadow-2xl p-6 min-w-[320px] max-w-full mx-2 animate-fade-in">
+      <div className="relative z-10 bg-[#23262F] rounded-xl shadow-2xl p-6 mx-2 animate-fade-in">
         {children}
       </div>
     </div>

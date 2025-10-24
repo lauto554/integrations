@@ -95,7 +95,8 @@ export default function MercadoPagoView() {
           setModalAction(null);
         }}
       >
-        <MercadoPagoForm action={modalAction} />
+        <div className=""></div>
+        {/* <MercadoPagoForm action={modalAction} /> */}
       </Modal>
     </div>
   );

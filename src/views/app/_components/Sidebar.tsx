@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const menuItems = [
     {
       label: "Inicio",
-      path: "/",
+      path: "/inicio",
     },
     {
       label: "Mercado Pago",
