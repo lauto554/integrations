@@ -11,7 +11,7 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<PortalView />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/inicio" element={<Layout />}>
+          <Route path="/dashboard" element={<Layout />}>
             <Route index element={<HomeView />} />
             <Route path="mercado-pago" element={<MercadoPagoView />} />
           </Route>

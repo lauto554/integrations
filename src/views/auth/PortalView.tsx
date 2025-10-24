@@ -2,7 +2,7 @@ import { useState } from "react";
 import Header from "./_components/Header";
 import Drawer from "./_components/Drawer";
 import Modal from "../app/_components/Modal";
-import LoginCard from "./LoginCard";
+import LoginCard from "./_components/LoginForm";
 import RegisterForm from "./_components/RegisterForm";
 
 export default function PortalView() {

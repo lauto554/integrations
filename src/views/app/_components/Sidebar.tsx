@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import Cookies from "js-cookie";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -7,11 +9,11 @@ export default function Sidebar() {
   const menuItems = [
     {
       label: "Inicio",
-      path: "/inicio",
+      path: "/dashboard",
     },
     {
       label: "Mercado Pago",
-      path: "/mercado-pago",
+      path: "/dashboard/mercado-pago",
     },
   ];
 
@@ -44,9 +46,22 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-6 py-4 border-t border-[#23262F] text-xs text-gray-500 cursor-default">
-        © {new Date().getFullYear()} lauto554
+      {/* Log Out Button */}
+      <div className="px-6 py-4 border-t border-[#23262F]">
+        <button
+          className="w-full flex items-start gap-2 justify-start py-2 px-3 rounded-md bg-transparent text-gray-400 hover:text-blue-400 font-semibold text-sm transition cursor-pointer"
+          onClick={() => {
+            Cookies.remove("access_token");
+            Cookies.remove("refresh_token");
+            navigate("/");
+          }}
+        >
+          <FiLogOut className="h-5 w-5" />
+          Log Out
+        </button>
+        <div className="mt-4 text-xs text-gray-500 cursor-default text-start">
+          © {new Date().getFullYear()} lauto554
+        </div>
       </div>
     </aside>
   );

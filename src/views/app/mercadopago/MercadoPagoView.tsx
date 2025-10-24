@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Modal from "../_components/Modal";
-import MercadoPagoForm from "./_components/MercadoPagoForm";
 
 export default function MercadoPagoView() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,7 +95,6 @@ export default function MercadoPagoView() {
         }}
       >
         <div className=""></div>
-        {/* <MercadoPagoForm action={modalAction} /> */}
       </Modal>
     </div>
   );

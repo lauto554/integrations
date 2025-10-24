@@ -1,4 +1,4 @@
-import LoginCard from "../LoginCard";
+import LoginForm from "./LoginForm";
 
 type DrawerProps = {
   openDrawer: boolean;
@@ -30,7 +30,7 @@ export default function Drawer({ openDrawer, setModalOpen, setModalType, onClose
         <div className="flex flex-col gap-6">
           <h2 className="text-xl font-bold text-blue-400 mb-2 text-center">Sign In</h2>
 
-          <LoginCard />
+          <LoginForm openDrawer={openDrawer} />
 
           <div className="mt-4 flex flex-col items-start gap-2">
             <span className="text-sm text-gray-400">
