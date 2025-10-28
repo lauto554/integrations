@@ -16,3 +16,14 @@ export async function signIn(payload: signInPayload) {
     throw error;
   }
 }
+
+export async function signUp(payload: signInPayload) {
+  try {
+    const url = `/auth/sign-up`;
+    const request = await api.post(url, payload);
+
+    return request.data;
+  } catch (error) {
+    throw error;
+  }
+}
