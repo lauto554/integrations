@@ -1,30 +1,18 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { consultaMercado } from "./services";
+import { useLocation } from "react-router-dom";
 import Modal from "../_components/Modal";
+import IntegrarModal from "./_components/IntegrarModal";
 
 export default function MercadoPagoView() {
+  // Obtener idEmpresa desde localStorage
+  const location = useLocation();
+
+  const idEmpresa = Number(localStorage.getItem("_ie"));
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | null>(null);
-
-  // Restore modal state from localStorage on mount
-  useEffect(() => {
-    const storedOpen = localStorage.getItem("mp_modalOpen");
-    const storedAction = localStorage.getItem("mp_modalAction");
-    if (storedOpen === "true") setModalOpen(true);
-    if (storedAction) setModalAction(storedAction);
-  }, []);
-
-  // Persist modal state to localStorsage
-  useEffect(() => {
-    localStorage.setItem("mp_modalOpen", modalOpen ? "true" : "false");
-  }, [modalOpen]);
-
-  useEffect(() => {
-    if (modalAction) {
-      localStorage.setItem("mp_modalAction", modalAction);
-    } else {
-      localStorage.removeItem("mp_modalAction");
-    }
-  }, [modalAction]);
 
   const cards = [
     {
@@ -54,10 +42,57 @@ export default function MercadoPagoView() {
     },
   ];
 
+  const { data } = useQuery({
+    queryKey: ["consultaMercado", idEmpresa],
+    queryFn: () => consultaMercado(idEmpresa),
+    enabled: !!idEmpresa,
+    staleTime: Infinity, // Nunca se vuelve a consultar automáticamente
+    refetchOnWindowFocus: false, // No refetch al volver al tab
+    refetchOnMount: false, // No refetch al remount
+    refetchOnReconnect: false, // No refetch al reconectar
+  });
+
+  // console.log(data);
+
+  // Restore modal state from localStorage on mount
+  useEffect(() => {
+    const storedOpen = localStorage.getItem("mp_modalOpen");
+    const storedAction = localStorage.getItem("mp_modalAction");
+    if (storedOpen === "true") setModalOpen(true);
+    if (storedAction) setModalAction(storedAction);
+  }, []);
+
+  // Persist modal state to localStorsage
+  useEffect(() => {
+    localStorage.setItem("mp_modalOpen", modalOpen ? "true" : "false");
+  }, [modalOpen]);
+
+  useEffect(() => {
+    if (modalAction) {
+      localStorage.setItem("mp_modalAction", modalAction);
+    } else {
+      localStorage.removeItem("mp_modalAction");
+    }
+  }, [modalAction]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+    if (code && window.opener) {
+      // Envía el code a la ventana principal
+      window.opener.postMessage({ mp_code: code }, "*");
+      // Cierra el popup
+      window.close();
+    }
+  }, [location.search]);
+
   return (
     <div className="flex flex-col h-full w-full p-8">
       <div className="w-full flex flex-col items-start gap-6 mb-8">
-        {cards.map((card) => (
+        {(data?.data && Array.isArray(data.data) && data.data.length > 0
+          ? [cards[1]]
+          : [cards[0]]
+        ).map((card) => (
           <div
             key={card.key}
             className="bg-[#23262F] border border-[#2d3344] rounded-xl shadow p-6 flex flex-col items-center min-w-[320px] max-w-xs transition-all duration-200 hover:shadow-xl hover:scale-[1.025]"
@@ -94,7 +129,7 @@ export default function MercadoPagoView() {
           setModalAction(null);
         }}
       >
-        <div className=""></div>
+        <IntegrarModal />
       </Modal>
     </div>
   );
