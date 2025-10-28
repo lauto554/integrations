@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { FaSpinner } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { signIn } from "../services";
 import { useNavigate } from "react-router";
@@ -25,6 +26,32 @@ export default function LoginForm({ openDrawer }: { openDrawer?: boolean }) {
     watch,
   } = useForm();
 
+  const { mutate, status } = useMutation({
+    mutationFn: signIn,
+    onError: (error: any) => {
+      console.log(error);
+      setErrorMessage(
+        error?.response?.data?.message ||
+          "Error de autenticación. Verifica tus datos e intenta nuevamente."
+      );
+      setErrorDialogOpen(true);
+    },
+    onSuccess: (data) => {
+      if (!data) {
+        setErrorMessage("No se recibió data en la respuesta de sign-in");
+        setErrorDialogOpen(true);
+        return;
+      }
+
+      localStorage.setItem("_ie", String(data.data.idEmpresa));
+      localStorage.setItem("_iu", String(data.data.idUsuario));
+
+      Cookies.set("access_token", data.data.access_token);
+      Cookies.set("refresh_token", data.data.refresh_token);
+      navigate("/dashboard");
+    },
+  });
+
   useEffect(() => {
     if (openDrawer) {
       setFocusIdx(0);
@@ -48,27 +75,6 @@ export default function LoginForm({ openDrawer }: { openDrawer?: boolean }) {
       }
     }
   }
-  const { mutate } = useMutation({
-    mutationFn: signIn,
-    onError: (error: any) => {
-      console.log(error);
-      setErrorMessage(
-        error?.response?.data?.message ||
-          "Error de autenticación. Verifica tus datos e intenta nuevamente."
-      );
-      setErrorDialogOpen(true);
-    },
-    onSuccess: (data) => {
-      if (!data) {
-        setErrorMessage("No se recibió data en la respuesta de sign-in");
-        setErrorDialogOpen(true);
-        return;
-      }
-      Cookies.set("access_token", data.data.access_token);
-      Cookies.set("refresh_token", data.data.refresh_token);
-      navigate("/dashboard");
-    },
-  });
 
   function onSubmit(formData: any) {
     mutate(formData);
@@ -110,16 +116,19 @@ export default function LoginForm({ openDrawer }: { openDrawer?: boolean }) {
         })}
         <button
           type="submit"
-          className={`mt-2 py-2 rounded font-semibold text-lg shadow transition
+          className={`mt-2 py-2 rounded font-semibold text-lg shadow transition flex items-center justify-center
             ${
-              watch("company") && watch("username") && watch("password")
+              watch("company") && watch("username") && watch("password") && status !== "pending"
                 ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
                 : "bg-gray-600 text-gray-300 cursor-default"
             }
           `}
-          disabled={!(watch("company") && watch("username") && watch("password"))}
+          disabled={
+            !(watch("company") && watch("username") && watch("password")) || status === "pending"
+          }
         >
-          Iniciar sesión
+          {status === "pending" ? <FaSpinner className="animate-spin mr-2" /> : null}
+          {status === "pending" ? "Cargando..." : "Iniciar sesión"}
         </button>
       </form>
     </div>
