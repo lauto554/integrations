@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./_components/Header";
 import Drawer from "./_components/Drawer";
 import Modal from "../app/_components/Modal";
@@ -6,9 +6,27 @@ import LoginCard from "./_components/LoginForm";
 import RegisterForm from "./_components/RegisterForm";
 
 export default function PortalView() {
+  // Restaurar estado del modal desde localStorage
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"register" | "forgot-password" | null>(null);
+  const [modalOpen, setModalOpen] = useState(() => {
+    const persisted = localStorage.getItem("modalOpen");
+    return persisted === "true";
+  });
+  const [modalType, setModalType] = useState<"register" | "forgot-password" | null>(() => {
+    const persisted = localStorage.getItem("modalType");
+    if (persisted === "register" || persisted === "forgot-password") return persisted;
+    return null;
+  });
+
+  // Persistir estado del modal en cada cambio
+  useEffect(() => {
+    localStorage.setItem("modalOpen", String(modalOpen));
+    if (modalType) {
+      localStorage.setItem("modalType", modalType);
+    } else {
+      localStorage.removeItem("modalType");
+    }
+  }, [modalOpen, modalType]);
 
   const logos = [
     // "ARCA-logo.png",
