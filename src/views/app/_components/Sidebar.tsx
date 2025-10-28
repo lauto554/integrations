@@ -18,16 +18,16 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 min-h-screen bg-[#181A20] border-r border-[#23262F] flex flex-col">
+    <aside className="flex flex-col w-64 min-h-screen bg-[#181A20] border-r border-[#23262F] ">
       {/* Header */}
-      <div className="h-16 flex items-center px-6 border-b border-[#23262F]">
+      <div className="flex h-16 items-center px-6 border-b border-[#23262F]">
         <span className="font-extrabold text-xl tracking-tight text-blue-400 cursor-default">
           Integrations
         </span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 flex flex-col gap-1 px-2 py-3">
+      <nav className="flex flex-col flex-1 gap-1 px-2 py-3">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (

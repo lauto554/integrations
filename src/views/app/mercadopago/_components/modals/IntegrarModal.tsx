@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { obtieneDatosAppMp } from "../services";
+import { obtieneDatosAppMp } from "../../services";
 
 export default function IntegrarModal() {
   const [step, setStep] = useState(1);

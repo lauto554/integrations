@@ -1,79 +1,57 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { consultaMercado } from "./services";
+import { consultaMercado, obtieneDatosUserMp } from "./services";
 import { useLocation } from "react-router-dom";
+import { useMercadoStore } from "./store/mercadoStore";
 import Modal from "../_components/Modal";
-import IntegrarModal from "./_components/IntegrarModal";
+import IntegrarModal from "./_components/modals/IntegrarModal";
+import IntegrarCard from "./_components/cards/IntegrarCard";
+import DashboardMercado from "./_components/DashboardMercado";
 
 export default function MercadoPagoView() {
-  // Obtener idEmpresa desde localStorage
   const location = useLocation();
-
   const idEmpresa = Number(localStorage.getItem("_ie"));
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalAction, setModalAction] = useState<string | null>(null);
 
-  const cards = [
-    {
-      key: "integrar",
-      icon: (
-        <span className="flex items-center justify-center h-10 w-10 bg-white rounded-full">
-          <img
-            src="/mercadopago.png"
-            alt="Mercado Pago logo"
-            className="h-8 w-auto object-contain"
-            draggable={false}
-          />
-        </span>
-      ),
-      title: "Mercado Pago",
-      description:
-        "Integra Mercado Pago a tu sistema y comienza a operar con pagos online de forma segura y profesional.",
-      button: "Integrar Mercado Pago",
-    },
-    {
-      key: "pruebas",
-      icon: null,
-      title: "¿Ya iniciaste la integración?",
-      description:
-        "Comenzá a hacer las pruebas de integración y validá el funcionamiento de tu conexión con Mercado Pago.",
-      button: "Comenzar pruebas",
-    },
-  ];
+  // Zustand store
+  const integracion = useMercadoStore((s) => s.integracion);
+  const setIntegracion = useMercadoStore((s) => s.setIntegracion);
+  const datosUserMp = useMercadoStore((s) => s.datosUserMp);
+  const setDatosUserMp = useMercadoStore((s) => s.setDatosUserMp);
 
-  const { data } = useQuery({
-    queryKey: ["consultaMercado", idEmpresa],
-    queryFn: () => consultaMercado(idEmpresa),
-    enabled: !!idEmpresa,
-    staleTime: Infinity, // Nunca se vuelve a consultar automáticamente
-    refetchOnWindowFocus: false, // No refetch al volver al tab
-    refetchOnMount: false, // No refetch al remount
-    refetchOnReconnect: false, // No refetch al reconectar
-  });
+  useEffect(() => {
+    if (!integracion && idEmpresa) {
+      consultaMercado(idEmpresa).then((data) => {
+        setIntegracion(data);
+      });
+    }
+  }, [integracion, idEmpresa, setIntegracion]);
 
-  // console.log(data);
+  const integracionActiva = !!(
+    integracion?.data &&
+    Array.isArray(integracion.data) &&
+    integracion.data.length > 0
+  );
 
-  // Restore modal state from localStorage on mount
+  useEffect(() => {
+    if (integracionActiva && !datosUserMp) {
+      obtieneDatosUserMp().then((data) => {
+        setDatosUserMp(data);
+      });
+    }
+  }, [integracionActiva, datosUserMp, setDatosUserMp]);
+
   useEffect(() => {
     const storedOpen = localStorage.getItem("mp_modalOpen");
-    const storedAction = localStorage.getItem("mp_modalAction");
+    // const storedAction = localStorage.getItem("mp_modalAction");
     if (storedOpen === "true") setModalOpen(true);
-    if (storedAction) setModalAction(storedAction);
+    // if (storedAction) setModalAction(storedAction);
   }, []);
 
   // Persist modal state to localStorsage
   useEffect(() => {
     localStorage.setItem("mp_modalOpen", modalOpen ? "true" : "false");
   }, [modalOpen]);
-
-  useEffect(() => {
-    if (modalAction) {
-      localStorage.setItem("mp_modalAction", modalAction);
-    } else {
-      localStorage.removeItem("mp_modalAction");
-    }
-  }, [modalAction]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -87,46 +65,17 @@ export default function MercadoPagoView() {
   }, [location.search]);
 
   return (
-    <div className="flex flex-col h-full w-full p-8">
-      <div className="w-full flex flex-col items-start gap-6 mb-8">
-        {(data?.data && Array.isArray(data.data) && data.data.length > 0
-          ? [cards[1]]
-          : [cards[0]]
-        ).map((card) => (
-          <div
-            key={card.key}
-            className="bg-[#23262F] border border-[#2d3344] rounded-xl shadow p-6 flex flex-col items-center min-w-[320px] max-w-xs transition-all duration-200 hover:shadow-xl hover:scale-[1.025]"
-          >
-            {card.icon && (
-              <div className="flex items-center gap-3 mb-2">
-                {card.icon}
-                <h2 className="text-lg font-bold text-blue-400 cursor-default">{card.title}</h2>
-              </div>
-            )}
-            {!card.icon && (
-              <h2 className="text-lg font-bold text-blue-400 mb-2 cursor-default">{card.title}</h2>
-            )}
-            <p className="text-center text-gray-300 text-sm mb-4 cursor-default">
-              {card.description}
-            </p>
-            <button
-              className="px-5 py-2 rounded bg-blue-600 text-white font-semibold text-sm shadow hover:bg-blue-700 transition cursor-pointer"
-              onClick={() => {
-                setModalAction(card.key);
-                setModalOpen(true);
-              }}
-            >
-              {card.button}
-            </button>
-          </div>
-        ))}
-      </div>
+    <div className="flex flex-col h-full w-full">
+      {integracionActiva && datosUserMp && datosUserMp.data ? (
+        <DashboardMercado />
+      ) : !integracionActiva ? (
+        <IntegrarCard setModalOpen={setModalOpen} />
+      ) : null}
 
       <Modal
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setModalAction(null);
         }}
       >
         <IntegrarModal />
