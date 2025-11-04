@@ -9,6 +9,8 @@ interface MercadoState {
   setSucursales: (data: any[]) => void;
   cajas: any[];
   setCajas: (data: any[]) => void;
+  terminales: any[];
+  setTerminales: (data: any[]) => void;
 }
 
 export const useMercadoStore = create<MercadoState>((set) => ({
@@ -43,5 +45,13 @@ export const useMercadoStore = create<MercadoState>((set) => ({
   setCajas: (data) => {
     set({ cajas: data });
     localStorage.setItem("mp_cajas", JSON.stringify(data));
+  },
+  terminales: (() => {
+    const stored = localStorage.getItem("mp_terminales");
+    return stored ? JSON.parse(stored) : [];
+  })(),
+  setTerminales: (data) => {
+    set({ terminales: data });
+    localStorage.setItem("mp_terminales", JSON.stringify(data));
   },
 }));
