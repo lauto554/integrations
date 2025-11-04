@@ -1,6 +1,4 @@
 import { useMercadoStore } from "../store/mercadoStore";
-import PosCard from "./cards/PosCard";
-import SucursalesCard from "./cards/SucursalesCard";
 
 export default function DashboardMercado() {
   const datosUserMp = useMercadoStore((s) => s.datosUserMp);
@@ -58,24 +56,6 @@ export default function DashboardMercado() {
                 {new Date(datosUserMp.data.registration_date).toLocaleDateString()}
               </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* === SECCIONES: SUCURSALES, CAJAS, ORDENES === */}
-      <div className="flex w-full flex-col gap-4 px-4">
-        {/* Sucursales */}
-        <SucursalesCard />
-        {/* Cajas */}
-        <PosCard />
-        {/* Ordenes de Pago */}
-        <div className="flex flex-col flex-1 gap-2 bg-[#23262F] border border-[#2d3344] shadow rounded-lg p-4">
-          <h3 className="mb-2 text-base font-semibold text-blue-300">Órdenes de Pago</h3>
-          <button className="w-fit flex items-center justify-center rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700">
-            Generar nueva orden de pago
-          </button>
-          <div className="italic text-sm text-gray-400">
-            (Aquí se mostrarán las órdenes de pago generadas)
           </div>
         </div>
       </div>

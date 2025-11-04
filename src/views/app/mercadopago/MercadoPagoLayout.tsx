@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { consultaMercado, obtieneDatosUserMp } from "./services";
+import { Outlet } from "react-router";
 import { useLocation } from "react-router-dom";
+import { consultaMercado, obtieneDatosUserMp } from "./services";
 import { useMercadoStore } from "./store/mercadoStore";
-import Modal from "../_components/Modal";
-import IntegrarModal from "./_components/modals/IntegrarModal";
-import IntegrarCard from "./_components/cards/IntegrarCard";
 import DashboardMercado from "./_components/DashboardMercado";
 
-export default function MercadoPagoView() {
+export default function MercadoPagoLayout() {
   const location = useLocation();
   const idEmpresa = Number(localStorage.getItem("_ie"));
 
@@ -19,6 +17,12 @@ export default function MercadoPagoView() {
   const datosUserMp = useMercadoStore((s) => s.datosUserMp);
   const setDatosUserMp = useMercadoStore((s) => s.setDatosUserMp);
 
+  const integracionActiva = !!(
+    integracion?.data &&
+    Array.isArray(integracion.data) &&
+    integracion.data.length > 0
+  );
+
   useEffect(() => {
     if (!integracion && idEmpresa) {
       consultaMercado(idEmpresa).then((data) => {
@@ -26,12 +30,6 @@ export default function MercadoPagoView() {
       });
     }
   }, [integracion, idEmpresa, setIntegracion]);
-
-  const integracionActiva = !!(
-    integracion?.data &&
-    Array.isArray(integracion.data) &&
-    integracion.data.length > 0
-  );
 
   useEffect(() => {
     if (integracionActiva && !datosUserMp) {
@@ -66,20 +64,11 @@ export default function MercadoPagoView() {
 
   return (
     <div className="flex flex-col h-full w-full">
-      {integracionActiva && datosUserMp && datosUserMp.data ? (
-        <DashboardMercado />
-      ) : !integracionActiva ? (
-        <IntegrarCard setModalOpen={setModalOpen} />
-      ) : null}
+      <DashboardMercado />
 
-      <Modal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-      >
-        <IntegrarModal />
-      </Modal>
+      <div className="px-2">
+        <Outlet />
+      </div>
     </div>
   );
 }
